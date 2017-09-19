@@ -1,0 +1,110 @@
+use Libraries.Game.Game
+use Libraries.Game.InputMonitor
+use Libraries.Interface.Events.KeyboardEvent
+use Libraries.Game.Graphics.Drawable
+use Libraries.Game.Graphics.Color
+use Libraries.Interface.Events.CollisionEvent2D
+use Libraries.Interface.Events.CollisionListener2D
+use Libraries.Game.Graphics.Label
+
+class Main is Game, CollisionListener2D
+InputMonitor im
+KeyboardEvent button
+Drawable box
+Drawable circle
+Color color
+Label label
+Label scoreCard
+
+integer score = 0
+
+   action Main
+     StartGame()
+   end
+
+   action CreateGame
+     box:LoadFilledRectangle(100,100,color:Red())
+     box:SetPosition(50,50)
+     box:SetCollidable(true)
+     Add(box)
+
+     circle:LoadFilledCircle(25,color:Purple())
+     circle:SetPosition(400, 400)
+     circle:SetCollidable(true)
+     Add(circle)
+
+     AddCollisionListener(me)
+   end
+
+   action Update (number seconds)
+        circle:Move(5,5)
+        
+        if circle:GetX()>GetScreenWidth()
+            circle:SetX(0)
+            circle:SetColor(color:Orange())
+        end
+        
+        if circle:GetY() > GetScreenHeight()
+            circle:SetY(0)
+            circle:SetColor(color:Blue())
+        end
+
+        if im:IsKeyPressed(button:X)
+            Exit()
+        end
+
+        if im:IsKeyPressed(button:RIGHT)
+            box:MoveX(10)            
+        end
+        if im:IsKeyPressed(button:LEFT)
+            box:MoveX(-10)
+        end
+        if im:IsKeyPressed(button:UP)
+            box:MoveY(10)
+        end
+        if im:IsKeyPressed(button:DOWN)
+            box:MoveY(-10)
+        end
+
+        if box:GetX() > 800
+            box:SetX(0)
+        end
+        
+        if box:GetY() > 1000
+            box:SetY(0)
+        end
+
+        if box:GetY() < 0
+            box:SetY(GetScreenWidth())
+        end
+
+        if box:GetX() < 0
+            box:SetX(GetScreenHeight())
+        end
+
+        if circle:GetScaleX() < 0.15
+            label:SetText("Game Over!")
+            label:SetSize(100)
+            label:SetPosition(50,50)
+            label:SetColor(color:Red())
+            Add(label)
+            circle:SetCollidable(false)
+        end
+    end
+    
+    action BeginCollision(CollisionEvent2D event)
+        box:SetColor(color:Purple())
+    end
+    
+    action FinishCollision (CollisionEvent2D event)
+        circle:Scale(0.75)
+        score = score + 1
+        text scoreLabel = cast(text,score)
+        scoreCard:SetText(scoreLabel)
+        scoreCard:SetPosition(500,400)
+        scoreCard:SetSize(200)
+        scoreCard:SetColor(color:Orange())
+        Add(scoreCard)
+    end
+
+end

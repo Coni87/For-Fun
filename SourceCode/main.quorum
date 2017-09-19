@@ -9,7 +9,7 @@ use Libraries.Game.Graphics.Label
 
 class Main is Game, CollisionListener2D
 InputMonitor im
-KeyboardEvent button
+KeyboardEvent button 
 Drawable box
 Drawable circle
 Color color
